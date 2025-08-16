@@ -13,8 +13,8 @@ services:
     # Alternative: use port mapping if not using host networking
     ports:
      - 9090:9090    # Web interface
-     - "5568:5568"    # Art-Net
-     - "6454:6454"    # Art-Net
+     - 5568:5568    # Art-Net
+     - 6454:6454    # Art-Net
     
     # USB device access (uncomment for USB DMX interfaces)
     #devices:
@@ -40,7 +40,7 @@ services:
       - OLA_CONFIG_DIR=/opt/docker/ola
     
     # Ensure proper permissions on host directories
-    user: "1000:1000"  # Adjust to match your host user ID
+    user: "888:888"  # Adjust to match your host user ID
     
     # Additional command arguments (optional)
     # command: ["olad", "--no-fork", "--log-level", "3", "--http-port", "9090"]
