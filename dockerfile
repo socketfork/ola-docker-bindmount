@@ -223,6 +223,8 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Expose OLA web interface port
 EXPOSE 9090
+EXPOSE 5568
+EXPOSE 6454
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \

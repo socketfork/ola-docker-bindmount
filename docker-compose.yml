@@ -4,7 +4,7 @@ services:
   ola:
     build: 
       context: .
-      dockerfile: Dockerfile
+      dockerfile: dockerfile
     container_name: ola-server
     restart: unless-stopped
     
