@@ -99,7 +99,7 @@ build_source() {
     
     docker build \
         --platform $platform \
-        -f Dockerfile \
+        -f dockerfile \
         -t ${IMAGE_NAME}:source \
         -t ${IMAGE_NAME}:git \
         .
@@ -118,7 +118,7 @@ build_bindmount() {
     
     docker build \
         --platform $platform \
-        -f Dockerfile.bindmount \
+        -f dockerfile \
         -t ${IMAGE_NAME}:bindmount \
         -t ${IMAGE_NAME}:config \
         .
