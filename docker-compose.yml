@@ -9,17 +9,17 @@ services:
     restart: unless-stopped
     
     # Network configuration - use host networking for full protocol support
-    network_mode: host
+    # network_mode: host
     # Alternative: use port mapping if not using host networking
-    # ports:
-    #   - "9090:9090"    # Web interface
-    #   - "5568:5568"    # Art-Net
-    #   - "6454:6454"    # Art-Net
+    ports:
+     - 9090:9090    # Web interface
+     - "5568:5568"    # Art-Net
+     - "6454:6454"    # Art-Net
     
     # USB device access (uncomment for USB DMX interfaces)
-    # devices:
-    #   - "/dev/ttyUSB0:/dev/ttyUSB0"
-    #   - "/dev/ttyACM0:/dev/ttyACM0"
+    devices:
+     - "/dev/ttyUSB0:/dev/ttyUSB0"
+     - "/dev/ttyACM0:/dev/ttyACM0"
     
     # Full USB access (use with caution)
     # privileged: true
