@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: dockerfile
     container_name: ola-server
-    restart: unless-stopped
+    # restart: unless-stopped
     
     # Network configuration - use host networking for full protocol support
     # network_mode: host
