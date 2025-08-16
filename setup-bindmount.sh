@@ -8,8 +8,8 @@ set -e
 # Configuration
 OLA_HOST_DIR="/opt/docker/ola"
 OLA_USER="olad"
-OLA_UID=999
-OLA_GID=999
+OLA_UID=888
+OLA_GID=888
 
 # Colors for output
 RED='\033[0;31m'
@@ -438,7 +438,7 @@ http://your-pi-ip:9090
 
 ## Important Notes
 
-1. **Permissions**: All files are owned by olad:olad (999:999)
+1. **Permissions**: All files are owned by olad:olad (888:888)
 2. **Editing**: Use sudo when editing configuration files
 3. **Restart**: Restart the container after configuration changes
 4. **Backup**: Regular backups are recommended before major changes
