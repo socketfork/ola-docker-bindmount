@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  ola:
+    build: 
+      context: .
+      dockerfile: Dockerfile.bindmount
+    container_name: ola-server
+    restart: unless-stopped
+    
+    # Network configuration - use host networking for full protocol support
+    network_mode: host
+    # Alternative: use port mapping if not using host networking
+    # ports:
+    #   - "9090:9090"    # Web interface
+    #   - "5568:5568"    # Art-Net
+    #   - "6454:6454"    # Art-Net
+    
+    # USB device access (uncomment for USB DMX interfaces)
+    # devices:
+    #   - "/dev/ttyUSB0:/dev/ttyUSB0"
+    #   - "/dev/ttyACM0:/dev/ttyACM0"
+    
+    # Full USB access (use with caution)
+    # privileged: true
+    # volumes:
+    #   - "/dev:/dev"
+    
+    # Bind mount configuration - creates host directory structure
+    volumes:
+      # Main configuration directory - create this on host first
+      - /opt/docker/ola:/opt/docker/ola
+      # Optional: additional bind mounts for specific config files
+      # - /opt/docker/ola/custom-startup.sh:/usr/local/bin/custom-startup.sh:ro
+    
+    # Environment variables for configuration
+    environment:
+      - OLA_HTTP_PORT=9090
+      - OLA_LOG_LEVEL=3
+      - OLA_CONFIG_DIR=/opt/docker/ola
+    
+    # Ensure proper permissions on host directories
+    user: "1000:1000"  # Adjust to match your host user ID
+    
+    # Additional command arguments (optional)
+    # command: ["olad", "--no-fork", "--log-level", "3", "--http-port", "9090"]
+
+# Optional: create a service to initialize host directories
+  ola-init:
+    image: alpine:latest
+    container_name: ola-init
+    volumes:
+      - /opt/docker/ola:/opt/docker/ola
+    command: >
+      sh -c "
+        mkdir -p /opt/docker/ola/config &&
+        mkdir -p /opt/docker/ola/logs &&
+        mkdir -p /opt/docker/ola/plugins &&
+        chmod -R 755 /opt/docker/ola &&
+        echo 'Host directories initialized'
+      "
+    profiles:
+      - init  # Only run when specifically requested
