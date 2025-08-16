@@ -17,14 +17,12 @@ services:
      - "6454:6454"    # Art-Net
     
     # USB device access (uncomment for USB DMX interfaces)
-    devices:
-     - "/dev/ttyUSB0:/dev/ttyUSB0"
-     - "/dev/ttyACM0:/dev/ttyACM0"
+    #devices:
+    # - "/dev/ttyUSB0:/dev/ttyUSB0"
+    # - "/dev/ttyACM0:/dev/ttyACM0"
     
     # Full USB access (use with caution)
-    # privileged: true
-    # volumes:
-    #   - "/dev:/dev"
+    privileged: true
     
     # Bind mount configuration - creates host directory structure
     volumes:
@@ -32,6 +30,8 @@ services:
       - /opt/docker/ola:/opt/docker/ola
       # Optional: additional bind mounts for specific config files
       # - /opt/docker/ola/custom-startup.sh:/usr/local/bin/custom-startup.sh:ro
+      # full usb access
+      - "/dev:/dev" 
     
     # Environment variables for configuration
     environment:
