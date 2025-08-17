@@ -27,7 +27,7 @@ services:
     # Bind mount configuration - creates host directory structure
     volumes:
       # Main configuration directory - create this on host first
-      - /opt/docker/ola:/opt/docker/ola
+      - /opt/docker/ola:/var/lib/ola
       # Optional: additional bind mounts for specific config files
       # - /opt/docker/ola/custom-startup.sh:/usr/local/bin/custom-startup.sh:ro
       # full usb access
