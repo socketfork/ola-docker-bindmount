@@ -39,4 +39,4 @@ services:
     # user: "888:888"  # Adjust to match your host user ID
     
     # Additional command arguments (optional)
-    command: ["olad", "--no-fork", "--log-level", "3", "--http-port", "9090"]
+    # command: ["olad", "--no-fork", "--log-level", "3", "--http-port", "9090"]
