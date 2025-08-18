@@ -1,7 +1,7 @@
 # Dockerfile for Open Lighting Architecture (OLA) on Raspberry Pi
 # This version uses bind mounts for easy configuration management
 
-FROM debian:9-slim
+FROM debian:latest
 
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive \
