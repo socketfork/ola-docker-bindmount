@@ -9,12 +9,12 @@ services:
     # restart: unless-stopped
     
     # Network configuration - use host networking for full protocol support
-    # network_mode: host
+    network_mode: host
     # Alternative: use port mapping if not using host networking
-    ports:
-     - 9090:9090    # Web interface
-     - 5568:5568    # Art-Net
-     - 6454:6454    # Art-Net
+    #ports:
+    # - 9090:9090    # Web interface
+    # - 5568:5568    # Art-Net
+    # - 6454:6454    # Art-Net
     
     # USB device access (uncomment for USB DMX interfaces)
     #devices:
@@ -44,20 +44,3 @@ services:
     
     # Additional command arguments (optional)
     command: ["olad", "--no-fork", "--log-level", "3", "--http-port", "9090"]
-
-# Optional: create a service to initialize host directories
-  ola-init:
-    image: alpine:latest
-    container_name: ola-init
-    volumes:
-      - /opt/docker/ola:/opt/docker/ola
-    command: >
-      sh -c "
-        mkdir -p /opt/docker/ola/config &&
-        mkdir -p /opt/docker/ola/logs &&
-        mkdir -p /opt/docker/ola/plugins &&
-        chmod -R 755 /opt/docker/ola &&
-        echo 'Host directories initialized'
-      "
-    profiles:
-      - init  # Only run when specifically requested
