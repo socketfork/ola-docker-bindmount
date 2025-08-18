@@ -25,9 +25,11 @@ RUN mkdir -p /usr/lib/olad/.ola && \
     chown -R olad:olad /var/log/ola && \
     chown -R olad:olad ${OLA_CONFIG_DIR}
 
-# Install system dependencies and build tools
-RUN apt-get update && apt-get upgrade -y && \
-    apt-get install -y \
+# Update packages
+RUN apt-get update && apt-get upgrade -y
+
+# Install packages
+RUN apt-get install -y \
     # Core OLA dependencies
     libcppunit-dev \
     uuid-dev \
