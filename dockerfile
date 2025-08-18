@@ -81,7 +81,7 @@ EXPOSE 9090 5568 6454
 ENTRYPOINT ["olad"]
 
 # Run daemon
-RUN /etc/init.d/olad start && 
+RUN /etc/init.d/olad start
 
 # Keep session open
 RUN sleep infinity
