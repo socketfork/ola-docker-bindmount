@@ -57,7 +57,8 @@ RUN apt-get install -y \
     ola-python \
     ola-rdm-tests 
     
-# Clean caches for a smaller build.
+    
+# Clean caches for a smaller build.\
 RUN apt-get autoremove \
     && apt-get clean \
     && rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
@@ -79,7 +80,11 @@ EXPOSE 9090 5568 6454
 # Set entrypoint
 ENTRYPOINT ["olad"]
 
-RUN /etc/init.d/olad start
+# Set user
+USER olad
+
+# Run daemon
+RUN /etc/init.d/olad start && sleep infinity
 
 # Default command
-CMD ["sleep infinity"]
+CMD ["olad", "--no-fork", "--log-level", "3"]
