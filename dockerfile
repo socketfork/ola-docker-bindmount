@@ -30,6 +30,11 @@ RUN apt-get install -y \
     libftdi1-dev \
     # Network discovery (future support)
     libavahi-client-dev \
+    avahi-daemon \
+    avahi-discover \
+    avahi-utils \
+    libnss-mdns \
+    mdns-scan \
     # OSC support
     liblo-dev \
     # Python support (optional)
@@ -72,7 +77,7 @@ EOF
 USER olad
 
 # Run the olad daemon
-RUN olad -f -l 3 && sleep 1 \
+RUN olad -f -l 3 --syslog && sleep 1 \
     # Disable all OLA plugins (borrowed from bartfeenstra)
     && bash -c 'for pid in {1..99}; do ola_plugin_state -p $pid -s disabled &>/dev/null; done'
 
