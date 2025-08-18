@@ -78,3 +78,6 @@ EXPOSE 9090 5568 6454
 
 # Set entrypoint
 ENTRYPOINT ["olad"]
+
+# Default command
+CMD ["olad", "--no-fork", "--log-level", "3"]
