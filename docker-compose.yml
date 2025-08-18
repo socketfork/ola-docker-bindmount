@@ -18,7 +18,7 @@ services:
      - 5568:5568    # Art-Net / sACN
      - 6454:6454    # Art-Net
      - 6083:6083    # KiNet
-     - 8000:8000    # OSC
+     - 9000:9000    # OSC
     
     # USB device access (uncomment for USB DMX interfaces)
     #devices:
