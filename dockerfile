@@ -74,7 +74,7 @@ USER olad
 # Run the olad daemon
 RUN olad -f -l 3 && sleep 1 \
     # Disable all OLA plugins (borrowed from bartfeenstra)
-    && bash -c 'for pid in {1..99}; do ola_plugin_state -p $pid -s disabled &>/dev/null; 
+    && bash -c 'for pid in {1..99}; do ola_plugin_state -p $pid -s disabled &>/dev/null; done'
 
  # Expose OLA web interface port
 EXPOSE 9090 9010 5568 6454 6083

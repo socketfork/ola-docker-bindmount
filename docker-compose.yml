@@ -27,13 +27,12 @@ services:
     # Full USB access (use with caution)
     privileged: true
     
-    # Bind mount configuration - creates host directory structure
+    # Bind mount configuration for config persistence
     volumes:
-      # Main configuration directory - create this on host first
-      - /opt/docker/ola:/usr/lib/olad
-      # Optional: additional bind mounts for specific config files
-      # - /opt/docker/ola/custom-startup.sh:/usr/local/bin/custom-startup.sh:ro
-      # full usb access
+      # Main configuration directory - create these on host first
+      - /opt/docker/ola/config:/usr/lib/olad
+      - /opt/docker/ola/logs:/var/log/ola
+      # full usb access (use with caution)
       - "/dev:/dev" 
     
     # Ensure proper permissions on host directories

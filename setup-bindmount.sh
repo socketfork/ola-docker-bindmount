@@ -49,8 +49,6 @@ create_host_directories() {
     
     mkdir -p "${OLA_HOST_DIR}/config"
     mkdir -p "${OLA_HOST_DIR}/logs" 
-    mkdir -p "${OLA_HOST_DIR}/plugins"
-    mkdir -p "${OLA_HOST_DIR}/scripts"
     mkdir -p "${OLA_HOST_DIR}/backup"
     
     print_status "Created directory structure at ${OLA_HOST_DIR}"
