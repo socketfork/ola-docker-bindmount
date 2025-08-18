@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: dockerfile
     container_name: ola-server
-    # restart: unless-stopped
+    restart: unless-stopped
     
     # Network configuration - use host networking for full protocol support
     # network_mode: host
@@ -18,6 +18,7 @@ services:
      - 5568:5568    # Art-Net / sACN
      - 6454:6454    # Art-Net
      - 6083:6083    # KiNet
+     - 8000:8000    # OSC
     
     # USB device access (uncomment for USB DMX interfaces)
     #devices:
@@ -30,10 +31,10 @@ services:
     # Bind mount configuration for config persistence
     volumes:
       # Main configuration directory - create these on host first
-      - /opt/docker/ola/config:/usr/lib/olad
-      - /opt/docker/ola/logs:/var/log/ola
+      - /opt/docker/ola/config:/usr/lib/olad:rw
+      - /opt/docker/ola/logs:/var/log/ola:rw
       # full usb access (use with caution)
-      - "/dev:/dev" 
+      - /dev:/dev
     
     # Ensure proper permissions on host directories
     # user: "888:888"  # Adjust to match your host user ID
