@@ -9,24 +9,8 @@ ENV DEBIAN_FRONTEND=noninteractive \
     OLA_VERSION=master \
     OLA_CONFIG_DIR=/opt/docker/ola
 
-# Create OLA user and group
-RUN groupadd -r olad && \
-    useradd -r -g olad -d /usr/lib/olad -s /bin/bash olad
-
-# Create directories with proper permissions
-RUN mkdir -p /usr/lib/olad/.ola && \
-    mkdir -p /var/lib/ola/conf && \
-    mkdir -p /var/log/ola && \
-    mkdir -p ${OLA_CONFIG_DIR}/config && \
-    mkdir -p ${OLA_CONFIG_DIR}/logs && \
-    mkdir -p ${OLA_CONFIG_DIR}/plugins && \
-    chown -R olad:olad /usr/lib/olad && \
-    chown -R olad:olad /var/lib/ola && \
-    chown -R olad:olad /var/log/ola && \
-    chown -R olad:olad ${OLA_CONFIG_DIR}
-
 # Update packages
-RUN apt-get update -qq
+RUN apt-get update && apt-get upgrade -y
 
 # Install packages
 RUN apt-get install -y \
@@ -57,11 +41,21 @@ RUN apt-get install -y \
     ola-python \
     ola-rdm-tests 
     
-    
-# Clean caches for a smaller build.\
+# Clean up apt caches
 RUN apt-get autoremove \
     && apt-get clean \
     && rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
+
+# Create directories with proper permissions
+RUN mkdir -p /usr/lib/olad/ && \
+    mkdir -p /var/lib/ola/conf && \
+    mkdir -p /var/log/ola && \
+    chown -R olad:olad -R /usr/lib/olad && \
+    chown -R olad:olad -R /var/lib/ola && \
+    chown -R olad:olad -R /var/log/ola && \
+    usermod -aG olad olad && \
+    chown root:olad /usr/bin/olad &&\
+    chmod ug+rwx /usr/bin/olad
 
 # Add udev rules for USB devices
 COPY <<EOF /etc/udev/rules.d/90-ola-usb.rules
@@ -74,17 +68,16 @@ SUBSYSTEM=="usb", ATTR{idVendor}=="0403", ATTR{idProduct}=="6015", GROUP="olad",
 SUBSYSTEM=="usb", ATTR{idVendor}=="03eb", ATTR{idProduct}=="2018", GROUP="olad", MODE="0664"
 EOF
 
-# Expose OLA web interface port
-EXPOSE 9090 5568 6454
+# Run command as olad
+USER olad
+
+# Run the olad daemon
+RUN olad -f -l 3 && sleep 1 \
+    # Disable all OLA plugins (borrowed from bartfeenstra)
+    && bash -c 'for pid in {1..99}; do ola_plugin_state -p $pid -s disabled &>/dev/null; 
+
+ # Expose OLA web interface port
+EXPOSE 9090 9010 5568 6454 6083
 
 # Set entrypoint
 ENTRYPOINT ["olad"]
-
-# Run daemon
-RUN /etc/init.d/olad start
-
-# Keep session open
-RUN sleep infinity
-
-# Default command
-CMD ["olad", "--no-fork", "--log-level", "3"]
