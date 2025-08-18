@@ -26,7 +26,7 @@ RUN mkdir -p /usr/lib/olad/.ola && \
     chown -R olad:olad ${OLA_CONFIG_DIR}
 
 # Update packages
-RUN apt-get update && apt-get upgrade -y
+RUN apt-get update -y
 
 # Install packages
 RUN apt-get install -y \
