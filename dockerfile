@@ -80,11 +80,11 @@ EXPOSE 9090 5568 6454
 # Set entrypoint
 ENTRYPOINT ["olad"]
 
-# Set user
-USER olad
-
 # Run daemon
-RUN /etc/init.d/olad start && sleep infinity
+RUN /etc/init.d/olad start && 
+
+# Keep session open
+RUN sleep infinity
 
 # Default command
 CMD ["olad", "--no-fork", "--log-level", "3"]
