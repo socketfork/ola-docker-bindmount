@@ -55,12 +55,12 @@ RUN apt-get install -y \
     # Finally install OLA with optional stuff
     ola \
     ola-python \
-    ola-rdm-tests \
+    ola-rdm-tests 
     # Clean caches for a smaller build.
-    && apt-get autoremove \
+
+RUN apt-get autoremove \
     && apt-get clean \
     && rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
-
 
 # Add udev rules for USB devices
 COPY <<EOF /etc/udev/rules.d/90-ola-usb.rules
@@ -79,5 +79,7 @@ EXPOSE 9090 5568 6454
 # Set entrypoint
 ENTRYPOINT ["olad"]
 
+RUN sudo /etc/init.d/olad start
+
 # Default command
-CMD ["olad", "--no-fork", "--log-level", "3"]
+CMD ["sleep infinity"]
