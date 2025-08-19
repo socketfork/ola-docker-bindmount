@@ -334,3 +334,10 @@ echo "0 0 * * * root find /opt/docker/ola/logs -name '*.log' -mtime +7 -delete" 
 sudo rm /opt/docker/ola -rd
 
 ```
+
+### Rebuild container
+```bash
+# Rebuild from scratch and recreate images
+sudo docker compose up -d --build --force-recreate
+
+```
