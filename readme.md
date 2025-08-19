@@ -118,8 +118,7 @@ sudo /opt/docker/ola/scripts/view-logs.sh live
 ```
 
 ## Directory Structure
-
-```
+```bash
 /opt/docker/ola/
 ├── config/                      # OLA configuration files
 │   ├── ola-daemon.conf         # Main daemon configuration
