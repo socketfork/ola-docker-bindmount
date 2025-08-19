@@ -328,7 +328,7 @@ echo "0 0 * * * root find /opt/docker/ola/logs -name '*.log' -mtime +7 -delete" 
 
 ## Starting Over
 
-### Cleaning bind mount files
+### Clean bind mount files
 ```bash
 # remove all OLA data on docker host
 sudo rm /opt/docker/ola -rd
