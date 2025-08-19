@@ -70,6 +70,7 @@ http://<docker host ip>:9090
 
 All plugins are enabled by default.  To avoid conflicts, disable any plugins that are not currently being used.
 
+
 ## Configuration Management
 
 ### Direct File Editing
