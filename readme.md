@@ -13,7 +13,7 @@ This version of the OLA Docker container uses bind mounts at `/opt/docker/ola/` 
 ## Features In Progress
 
 - **Log File Binds**: Working on logging data to the logs bind mount
-- **Avahi mDNS Support**: Working on fixing issue where OLA can't find avahi, causing 100% cpu util
+- **Avahi mDNS Support**: Working on fixing issue where OLA can't find avahi, causing 100% cpu util (currently disabled until fix is found)
 
 ## Quick Setup
 
