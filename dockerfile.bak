@@ -52,8 +52,8 @@ RUN apt-get update && apt-get upgrade -y && \
     && rm -rf /var/lib/apt/lists/*
 
 # Create OLA user and group
-RUN groupadd -r olad && \
-    useradd -r -g olad -d /usr/lib/olad -s /bin/bash olad
+RUN groupadd -g 888 -r olad && \
+    useradd -r -g olad -u 888 -d /usr/lib/olad -s /bin/bash olad
 
 # Clone and build OLA from source
 WORKDIR /tmp

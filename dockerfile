@@ -1,55 +1,59 @@
 # Dockerfile for Open Lighting Architecture (OLA) on Raspberry Pi
 # This version uses bind mounts for easy configuration management
 
-FROM debian:latest
+FROM debian:stable-slim
 
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive \
-    TERM=linux \
-    OLA_VERSION=master \
-    OLA_CONFIG_DIR=/opt/docker/ola
+    TERM=linux 
+
+# Create OLA user and group
+RUN groupadd -g 888 -r olad && \
+    useradd -r -g olad -u 888 -d /usr/lib/olad -s /bin/bash olad
 
 # Update packages
 RUN apt-get update && apt-get upgrade -y
 
 # Install packages
 RUN apt-get install -y \
-    # Core OLA dependencies
-    libcppunit-dev \
-    uuid-dev \
-    libncurses5-dev \
-    zlib1g-dev \
-    # Protocol buffer support
-    protobuf-compiler \
-    libprotobuf-dev \
-    libprotoc-dev \
-    # HTTP server support
-    libmicrohttpd-dev \
     # USB device support
-    libusb-1.0-0-dev \
-    libftdi1-dev \
-    # Network discovery (future support)
-    libavahi-client-dev \
-    avahi-daemon \
-    avahi-discover \
-    avahi-utils \
-    libnss-mdns \
-    mdns-scan \
+        libusb-1.0-0-dev \
+        libftdi1-dev \
+    # Network discovery (disabling currently due to avahi bugs)
+        #libavahi-client-dev \
+        #avahi-daemon \
+        #avahi-utils \
+        #libnss-mdns \
+        #dbus \
+        #supervisor \
     # OSC support
-    liblo-dev \
+        liblo-dev \
     # Python support (optional)
-    python3-dev \
-    python3-protobuf \
-    python3-numpy \
+        python3-dev \
+        python3-protobuf \
+        python3-numpy \
     # Finally install OLA with optional stuff
-    ola \
-    ola-python \
-    ola-rdm-tests 
+        ola \
+        ola-python \
+        ola-rdm-tests 
     
 # Clean up apt caches
 RUN apt-get autoremove \
     && apt-get clean \
     && rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
+
+# Copy config files for avahi (disabling currently due to avahi bugs)
+# ADD start.sh /start.sh
+# ADD avahi-daemon.conf /etc/avahi/avahi-daemon.conf
+# ADD supervisord.conf /etc/supervisor/supervisord.conf
+# COPY avahi-daemon.conf /etc/avahi/avahi-daemon.conf
+# COPY supervisord.conf /etc/supervisor/supervisord.conf
+# RUN mkdir -p /var/log/supervisord
+
+# Setup d-bus/avahi service (disabling currently due to avahi bugs)
+# RUN mkdir -p /var/run/dbus
+# RUN chmod a+x /start.sh
+# RUN avahi-daemon --no-drop-root
 
 # Create directories with proper permissions
 RUN mkdir -p /usr/lib/olad/ && \
@@ -73,16 +77,20 @@ SUBSYSTEM=="usb", ATTR{idVendor}=="0403", ATTR{idProduct}=="6015", GROUP="olad",
 SUBSYSTEM=="usb", ATTR{idVendor}=="03eb", ATTR{idProduct}=="2018", GROUP="olad", MODE="0664"
 EOF
 
-# Run command as olad
+# Run as olad
 USER olad
 
 # Run the olad daemon
-RUN olad -f -l 3 --syslog && sleep 1 \
+RUN olad -f --no-register-with-dns-sd && sleep 5 \
     # Disable all OLA plugins (borrowed from bartfeenstra)
     && bash -c 'for pid in {1..99}; do ola_plugin_state -p $pid -s disabled &>/dev/null; done'
 
- # Expose OLA web interface port
-EXPOSE 9090 9010 5568 6454 6083
-
 # Set entrypoint
 ENTRYPOINT ["olad"]
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:9090/ || exit 1
+
+# Expose OLA ports
+EXPOSE 9090 9010 5568 6454 6083

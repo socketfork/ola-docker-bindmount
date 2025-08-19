@@ -50,6 +50,7 @@ create_host_directories() {
     mkdir -p "${OLA_HOST_DIR}/config"
     mkdir -p "${OLA_HOST_DIR}/logs" 
     mkdir -p "${OLA_HOST_DIR}/backup"
+    mkdir -p "${OLA_HOST_DIR}/scripts"
     
     print_status "Created directory structure at ${OLA_HOST_DIR}"
 }
@@ -89,27 +90,6 @@ set_permissions() {
 # Function to create sample configuration files
 create_sample_configs() {
     print_step "Creating sample configuration files..."
-    
-    # Main OLA daemon configuration
-    cat > "${OLA_HOST_DIR}/config/ola-daemon.conf" << 'EOF'
-# OLA Daemon Configuration
-# This file contains global settings for the OLA daemon
-
-# HTTP server settings
-http_enable = true
-http_port = 9090
-http_data_dir = /usr/share/olad/www
-
-# Logging settings
-log_level = 3
-syslog = false
-
-# Plugin directory
-plugin_dir = /usr/lib/olad
-
-# RDM settings
-rdm_responder_tests = false
-EOF
 
     # Art-Net plugin configuration
     cat > "${OLA_HOST_DIR}/config/ola-artnet.conf" << 'EOF'
@@ -187,39 +167,6 @@ dmx_frame_rate = 25
 # Break and Mark After Break times (microseconds)
 break_time = 176
 mab_time = 12
-EOF
-
-    # Open Pixel Control configuration
-    cat > "${OLA_HOST_DIR}/config/ola-openpixelcontrol.conf" << 'EOF'
-# Open Pixel Control Plugin Configuration
-# For controlling LED strips and pixel displays
-
-enabled = false
-
-# Listen address and port
-listen_address = 127.0.0.1
-port = 7890
-
-# Universe mapping
-universe = 1
-EOF
-
-    # OSC plugin configuration
-    cat > "${OLA_HOST_DIR}/config/ola-osc.conf" << 'EOF'
-# OSC (Open Sound Control) Plugin Configuration
-# For integration with audio/visual applications
-
-enabled = false
-
-# Listen port for incoming OSC messages
-listen_port = 7770
-
-# Target address for outgoing OSC messages
-target_address = 127.0.0.1
-target_port = 7771
-
-# Universe mapping
-universe = 1
 EOF
 
     print_status "Created sample configuration files in ${OLA_HOST_DIR}/config/"
@@ -324,23 +271,23 @@ read -p "Select configuration (1-5): " choice
 case $choice in
     1)
         echo "Starting basic OLA..."
-        docker run -d --name ola --network host -v /opt/docker/ola:/opt/docker/ola ola:latest
+        docker run -d --name ola-bindmount --network host -v /opt/docker/ola:/opt/docker/ola ola:latest
         ;;
     2)
         echo "Starting OLA with Art-Net..."
-        docker run -d --name ola --network host -v /opt/docker/ola:/opt/docker/ola ola:latest
+        docker run -d --name ola-bindmount --network host -v /opt/docker/ola:/opt/docker/ola ola:latest
         ;;
     3)
         echo "Starting OLA with E1.31/sACN..."
-        docker run -d --name ola --network host -v /opt/docker/ola:/opt/docker/ola ola:latest
+        docker run -d --name ola-bindmount --network host -v /opt/docker/ola:/opt/docker/ola ola:latest
         ;;
     4)
         echo "Starting OLA with USB support..."
-        docker run -d --name ola --network host --device /dev/ttyUSB0:/dev/ttyUSB0 -v /opt/docker/ola:/opt/docker/ola ola:latest
+        docker run -d --name ola-bindmount --network host --device /dev/ttyUSB0:/dev/ttyUSB0 -v /opt/docker/ola:/opt/docker/ola ola:latest
         ;;
     5)
         echo "Starting OLA with all protocols..."
-        docker run -d --name ola --network host --privileged -v /dev:/dev -v /opt/docker/ola:/opt/docker/ola ola:latest
+        docker run -d --name ola-bindmount --network host --privileged -v /dev:/dev -v /opt/docker/ola:/opt/docker/ola ola:latest
         ;;
     *)
         echo "Invalid selection"
@@ -418,7 +365,7 @@ This directory contains configuration files for your OLA Docker container.
 # View configuration
 sudo ls -la /opt/docker/ola/config/
 
-# Edit Art-Net settings
+# Edit config settings
 sudo nano /opt/docker/ola/config/ola-artnet.conf
 
 # View logs
@@ -458,10 +405,10 @@ show_completion() {
     echo ""
     echo -e "${BLUE}Next steps:${NC}"
     echo "1. Build the OLA Docker image:"
-    echo "   docker build -f Dockerfile.bindmount -t ola:bindmount ."
+    echo "   sudo docker compose build"
     echo ""
     echo "2. Run the container:"
-    echo "   docker run -d --name ola --network host -v /opt/docker/ola:/opt/docker/ola ola:bindmount"
+    echo "   sudo docker compose up -d"
     echo ""
     echo "3. Access the web interface:"
     echo "   http://$(hostname -I | awk '{print $1}'):9090"
@@ -490,11 +437,11 @@ main() {
     create_readme
     
     # Optional systemd service
-    read -p "Create systemd service for auto-start? (y/n): " -n 1 -r
-    echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        create_systemd_service
-    fi
+    #read -p "Create systemd service for auto-start? (experimental feature) [y/n]: " -n 1 -r
+    #echo
+    #if [[ $REPLY =~ ^[Yy]$ ]]; then
+    #    create_systemd_service
+    #fi
     
     show_completion
 }
@@ -504,7 +451,7 @@ if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
     echo "Usage: $0"
     echo ""
     echo "This script sets up the host system for OLA Docker with bind mounts."
-    echo "It creates directories, users, permissions, and sample configurations."
+    echo "It creates directories, users, permissions, and maintence scripts."
     echo ""
     echo "Must be run as root (use sudo)."
     exit 0

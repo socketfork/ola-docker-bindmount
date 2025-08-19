@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  ola:
+  ola-bindmount:
     build: 
       context: .
       dockerfile: dockerfile
@@ -26,18 +26,17 @@ services:
     # - "/dev/ttyACM0:/dev/ttyACM0"
     
     # Full USB access (use with caution)
-    # privileged: true
+    privileged: true
     
     # Bind mount configuration for config persistence
     volumes:
       # Main configuration directory - create these on host first
       - /opt/docker/ola/config:/usr/lib/olad:rw
-      - /opt/docker/ola/logs:/var/log/syslog:rw
       # full usb access (use with caution)
-      # - /dev:/dev
+      - /dev:/dev
     
     # Ensure proper permissions on host directories
-    # user: "888:888"  # Adjust to match your host user ID
+    user: "888:888"  # Adjust to match your host user ID
     
     # Additional command arguments (optional)
-    # command: ["olad", "--no-fork", "--log-level", "3", "--http-port", "9090"]
+    command: ["olad", "--no-register-with-dns-sd"]    # disable avahi dns due to bugs

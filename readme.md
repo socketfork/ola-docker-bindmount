@@ -5,33 +5,33 @@ This version of the OLA Docker container uses bind mounts at `/opt/docker/ola/` 
 ## Key Advantages of Bind Mount Approach
 
 - **Direct File Access**: Edit configuration files directly on the host with your favorite editor
-- **Easy Backup**: Simple file-based backups using standard tools
+- **Easy Backup**: Simple file-based backups using simple scripts
 - **Version Control**: Put configuration under Git or other VCS
 - **Persistent**: Configuration survives container recreation
-- **Transparent**: See exactly what files are being used
+- **Transparent**: Easily view configurations
 
 ## Quick Setup
 
 ### 1. Prepare Host System
 ```bash
 # Run the setup script to prepare directories and permissions
-sudo ./setup-bindmount.sh
+sudo ./setup.sh
 
 # This creates:
 # - /opt/docker/ola/config/    (OLA configuration files)
 # - /opt/docker/ola/logs/      (Log files)  
 # - /opt/docker/ola/plugins/   (Plugin data)
 # - /opt/docker/ola/scripts/   (Utility scripts)
-# - /opt/docker/ola/backup/    (Configuration backups)
+# - /opt/docker/ola/backup/    (Configuration backup storage)
 ```
 
 ### 2. Build Container
 ```bash
 # Build the bind mount version
-docker build -f Dockerfile.bindmount -t ola:bindmount .
+docker build -f dockerfile -t ola:bindmount .
 
 # Or use docker-compose
-docker-compose -f docker-compose.bindmount.yml build
+sudo docker compose build
 ```
 
 ### 3. Run Container
@@ -39,18 +39,19 @@ docker-compose -f docker-compose.bindmount.yml build
 # Basic run with bind mount
 docker run -d --name ola \
   --network host \
-  -v /opt/docker/ola:/opt/docker/ola \
+  -v /opt/docker/ola/config:/usr/lib/olad:rw \
   ola:bindmount
 
 # Or with USB device access
 docker run -d --name ola \
   --network host \
-  --device /dev/ttyUSB0:/dev/ttyUSB0 \
-  -v /opt/docker/ola:/opt/docker/ola \
+  --privileged \
+  -v /dev:/dev \
+  -v /opt/docker/ola/config:/usr/lib/olad:rw \
   ola:bindmount
 
 # Or use docker-compose
-docker-compose -f docker-compose.bindmount.yml up -d
+sudo docker compose up -d
 ```
 
 ## Configuration Management
@@ -76,12 +77,9 @@ The setup script creates these sample configuration files:
 
 | File | Purpose |
 |------|---------|
-| `ola-daemon.conf` | Main OLA daemon settings (HTTP port, logging, etc.) |
 | `ola-artnet.conf` | Art-Net protocol configuration |
 | `ola-e131.conf` | E1.31/sACN protocol configuration |
 | `ola-usbpro.conf` | USB Pro device configuration |
-| `ola-openpixelcontrol.conf` | Open Pixel Control for LED strips |
-| `ola-osc.conf` | OSC (Open Sound Control) integration |
 
 ### After Configuration Changes
 ```bash
@@ -89,7 +87,7 @@ The setup script creates these sample configuration files:
 docker restart ola
 
 # Or if using docker-compose
-docker-compose -f docker-compose.bindmount.yml restart
+sudo docker compose restart
 ```
 
 ## Utility Scripts
@@ -117,10 +115,6 @@ sudo /opt/docker/ola/scripts/view-logs.sh ola.log
 sudo /opt/docker/ola/scripts/view-logs.sh live
 ```
 
-### Quick Start
-```bash
-# Interactive setup for common configurations
-sudo /opt/docker/ola/scripts/quick-start.sh
 ```
 
 ## Directory Structure
@@ -255,7 +249,7 @@ sudo nano /opt/docker/ola/config/testing/ola-artnet.conf
 ls -la /opt/docker/ola/config/
 
 # Fix permissions if needed
-sudo chown -R 999:999 /opt/docker/ola/
+sudo chown -R 888:888 /opt/docker/ola/
 sudo chmod -R 755 /opt/docker/ola/
 ```
 
@@ -331,39 +325,3 @@ sudo git commit -m "Initial OLA configuration"
 # Add to crontab for regular log rotation
 echo "0 0 * * * root find /opt/docker/ola/logs -name '*.log' -mtime +7 -delete" | sudo tee -a /etc/crontab
 ```
-
-### Automated Deployment
-```bash
-# Use Ansible, Puppet, or other tools to manage configuration
-# Example Ansible task:
-```
-
-```yaml
-- name: Update OLA Art-Net configuration
-  template:
-    src: ola-artnet.conf.j2
-    dest: /opt/docker/ola/config/ola-artnet.conf
-    owner: olad
-    group: olad
-    mode: '0644'
-  notify: restart ola container
-```
-
-## Security Considerations
-
-### File Permissions
-- Configuration files are owned by `olad:olad` (UID/GID 999)
-- Use `sudo` for editing configuration files
-- Ensure `/opt/docker/ola` is not world-writable
-
-### Network Security
-- Use firewall rules to restrict access to OLA ports
-- Consider VPN or SSH tunneling for remote access
-- Monitor network traffic for unauthorized access
-
-### Container Security
-- Avoid `--privileged` unless necessary for USB access
-- Use specific device mounts instead of `/dev` bind mount
-- Regular security updates for base container image
-
-This bind mount approach provides maximum flexibility for OLA configuration management while maintaining the benefits of containerization.
