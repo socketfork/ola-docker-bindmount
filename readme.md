@@ -324,3 +324,12 @@ sudo git commit -m "Initial OLA configuration"
 # Add to crontab for regular log rotation
 echo "0 0 * * * root find /opt/docker/ola/logs -name '*.log' -mtime +7 -delete" | sudo tee -a /etc/crontab
 ```
+
+## Starting Over
+
+### Cleaning bind mount files
+```bash
+# remove all OLA data on docker host
+sudo rm /opt/docker/ola -rd
+
+```
