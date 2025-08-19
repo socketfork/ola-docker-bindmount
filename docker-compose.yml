@@ -31,7 +31,7 @@ services:
     # Bind mount configuration for config persistence
     volumes:
       # Main configuration directory - create these on host first
-      - /opt/docker/ola/config:/usr/lib/olad:rw
+      - /opt/docker/ola/config:/usr/lib/olad/.ola:rw
       # full usb access (use with caution)
       - /dev:/dev
     
