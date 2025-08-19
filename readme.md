@@ -15,6 +15,7 @@ This version of the OLA Docker container uses bind mounts at `/opt/docker/ola/` 
 ### 1. Prepare Host System
 ```bash
 # Run the setup script to prepare directories and permissions
+chmod 755 ./setup.sh
 sudo ./setup.sh
 
 # This creates:
