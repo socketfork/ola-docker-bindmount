@@ -81,9 +81,9 @@ EOF
 USER olad
 
 # Run the olad daemon
-RUN olad -f --no-register-with-dns-sd && sleep 5 \
+RUN olad -f --no-register-with-dns-sd && sleep 5 
     # Disable all OLA plugins (borrowed from bartfeenstra)
-    && bash -c 'for pid in {1..99}; do ola_plugin_state -p $pid -s disabled &>/dev/null; done'
+    # && bash -c 'for pid in {1..99}; do ola_plugin_state -p $pid -s disabled &>/dev/null; done'
 
 # Set entrypoint
 ENTRYPOINT ["olad"]
