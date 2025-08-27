@@ -87,91 +87,6 @@ set_permissions() {
     print_status "Set ownership to olad:olad (${OLA_UID}:${OLA_GID})"
 }
 
-# Function to create sample configuration files
-create_sample_configs() {
-    print_step "Creating sample configuration files..."
-
-    # Art-Net plugin configuration
-    cat > "${OLA_HOST_DIR}/config/ola-artnet.conf" << 'EOF'
-# Art-Net Plugin Configuration
-# Controls DMX over Ethernet using the Art-Net protocol
-
-# Enable/disable the plugin
-enabled = true
-
-# Network interface to bind to (leave empty for all interfaces)
-ip = 
-
-# Short and long names for this node
-short_name = OLA-Docker
-long_name = Open Lighting Architecture Docker Node
-
-# Net, subnet and universe settings
-net = 0
-subnet = 0
-
-# Input and output universe mappings
-# Format: ola_universe = artnet_universe
-universe_1 = 1:0
-universe_2 = 2:0
-
-# Node type settings
-always_broadcast = false
-use_limited_broadcast = true
-EOF
-
-    # E1.31 (sACN) plugin configuration  
-    cat > "${OLA_HOST_DIR}/config/ola-e131.conf" << 'EOF'
-# E1.31 (Streaming ACN) Plugin Configuration
-# Controls DMX over IP using the E1.31/sACN protocol
-
-enabled = true
-
-# IP address to bind to (empty for all interfaces)
-ip = 
-
-# Universe configuration (OLA universe = E1.31 universe)
-universe_1 = 1
-universe_2 = 2
-
-# Source name for sACN packets
-source_name = OLA-Docker
-
-# Priority (0-200, default 100)
-priority = 100
-
-# Preview data flag
-preview_mode = false
-
-# Multicast or unicast
-use_multicast = true
-EOF
-
-    # USB Pro plugin configuration
-    cat > "${OLA_HOST_DIR}/config/ola-usbpro.conf" << 'EOF'
-# USB Pro Plugin Configuration
-# Supports Enttec USB Pro and compatible devices
-
-enabled = true
-
-# Device path (auto-detected if empty)
-# Common paths: /dev/ttyUSB0, /dev/ttyACM0
-device = 
-
-# Universe assignment
-universe = 1
-
-# DMX frame rate (1-40 fps)
-dmx_frame_rate = 25
-
-# Break and Mark After Break times (microseconds)
-break_time = 176
-mab_time = 12
-EOF
-
-    print_status "Created sample configuration files in ${OLA_HOST_DIR}/config/"
-}
-
 # Function to create useful scripts
 create_scripts() {
     print_step "Creating utility scripts..."
@@ -250,52 +165,6 @@ else
             ;;
     esac
 fi
-EOF
-
-    # Quick start script
-    cat > "${OLA_HOST_DIR}/scripts/quick-start.sh" << 'EOF'
-#!/bin/bash
-# Quick start OLA with common configurations
-
-echo "OLA Docker Quick Start"
-echo "====================="
-echo ""
-echo "1. Basic OLA (web interface only)"
-echo "2. Art-Net enabled" 
-echo "3. E1.31/sACN enabled"
-echo "4. USB device enabled"
-echo "5. All protocols enabled"
-echo ""
-read -p "Select configuration (1-5): " choice
-
-case $choice in
-    1)
-        echo "Starting basic OLA..."
-        docker run -d --name ola-bindmount --network host -v /opt/docker/ola:/opt/docker/ola ola:latest
-        ;;
-    2)
-        echo "Starting OLA with Art-Net..."
-        docker run -d --name ola-bindmount --network host -v /opt/docker/ola:/opt/docker/ola ola:latest
-        ;;
-    3)
-        echo "Starting OLA with E1.31/sACN..."
-        docker run -d --name ola-bindmount --network host -v /opt/docker/ola:/opt/docker/ola ola:latest
-        ;;
-    4)
-        echo "Starting OLA with USB support..."
-        docker run -d --name ola-bindmount --network host --device /dev/ttyUSB0:/dev/ttyUSB0 -v /opt/docker/ola:/opt/docker/ola ola:latest
-        ;;
-    5)
-        echo "Starting OLA with all protocols..."
-        docker run -d --name ola-bindmount --network host --privileged -v /dev:/dev -v /opt/docker/ola:/opt/docker/ola ola:latest
-        ;;
-    *)
-        echo "Invalid selection"
-        exit 1
-        ;;
-esac
-
-echo "OLA started! Web interface: http://$(hostname -I | awk '{print $1}'):9090"
 EOF
 
     # Make scripts executable
@@ -378,7 +247,7 @@ sudo /opt/docker/ola/scripts/backup-config.sh
 docker run -d --name ola --network host -v /opt/docker/ola:/opt/docker/ola ola:latest
 
 # Access web interface
-http://your-pi-ip:9090
+http://your-ip:9090
 ```
 
 ## Important Notes
@@ -419,7 +288,7 @@ show_completion() {
     echo "5. Use utility scripts in:"
     echo "   ${OLA_HOST_DIR}/scripts/"
     echo ""
-    echo -e "${YELLOW}Configuration files are now directly editable on the host system!${NC}"
+    echo -e "${YELLOW}Configuration files are created on first run and then are directly editable on the host system!${NC}"
 }
 
 # Main execution
@@ -431,7 +300,6 @@ main() {
     check_root
     create_host_directories
     create_ola_user
-    create_sample_configs
     create_scripts
     set_permissions
     create_readme
